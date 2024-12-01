@@ -4,8 +4,9 @@ C_OPTS=-Iinclude
 
 OUT_FILE=parallel_prim.out
 
+CPU_COUNT?=4
 RUN=mpirun
-RUN_OPTS=-np 4
+RUN_OPTS=-np $(CPU_COUNT)
 
 LIB_FILES = \
 	lib/matrix2d.h
