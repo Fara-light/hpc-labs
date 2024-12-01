@@ -138,6 +138,12 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    double start_time;
+    if (rank == 0)
+    {
+        start_time = MPI_Wtime();
+    }
+
     FILE *in_fp = fopen("input_graph.txt", "r");
     if (in_fp == NULL)
     {
@@ -182,6 +188,9 @@ int main(int argc, char** argv)
         }
         fclose(out_fp);
         matrix2d_free((void**)res);
+
+        double elapsed_time = MPI_Wtime();
+        printf("CPU_COUNT: %d, EXEC_TIME: %lfs\n", size, elapsed_time - start_time);
     }
 
     matrix2d_free((void**)adjacency_matrix);
