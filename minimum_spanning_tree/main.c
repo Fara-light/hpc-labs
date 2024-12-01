@@ -139,12 +139,6 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    double start_time;
-    if (rank == 0)
-    {
-        start_time = MPI_Wtime();
-    }
-
     if (argc == 1)
     {
         printf("Error: no input and output files\n");
@@ -185,10 +179,18 @@ int main(int argc, char** argv)
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
+
+    double start_time, elapsed_time;
+    if (rank == 0)
+    {
+        start_time = MPI_Wtime();
+    }
+
     int** res = MPI_minimumSpanningTree(adjacency_matrix, n, rank, size);
 
     if (rank == 0)
     {
+        elapsed_time = MPI_Wtime();
         for (size_t i = 0; i < n; ++i)
         {
             for (size_t j = 0; j < n; ++j)
@@ -200,7 +202,6 @@ int main(int argc, char** argv)
         fclose(out_fp);
         matrix2d_free((void**)res);
 
-        double elapsed_time = MPI_Wtime();
         printf("CPU_COUNT: %d, EXEC_TIME: %lfs\n", size, elapsed_time - start_time);
     }
 
