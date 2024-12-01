@@ -7,6 +7,7 @@
 #include <lib/matrix2d.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <mpi.h>
 
 #define INF 10000000
@@ -144,11 +145,28 @@ int main(int argc, char** argv)
         start_time = MPI_Wtime();
     }
 
-    FILE *in_fp = fopen("input_graph.txt", "r");
+    if (argc == 1)
+    {
+        printf("Error: no input and output files\n");
+        exit(1);
+    }
+
+    FILE *in_fp = fopen(argv[1], "r");
     if (in_fp == NULL)
     {
-        printf("Error: can't open input_graph.txt file\n");
-        exit(1);
+        printf("Error: can't open %s file\n", argv[1]);
+        exit(2);
+    }
+
+    FILE *out_fp = NULL;
+    if (rank == 0)
+    {
+        out_fp = fopen(argv[2], "w");
+        if (out_fp == NULL)
+        {
+            printf("Error: can't open %s file\n", argv[2]);
+            exit(3);
+        }
     }
 
     int n;
@@ -167,17 +185,10 @@ int main(int argc, char** argv)
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-
     int** res = MPI_minimumSpanningTree(adjacency_matrix, n, rank, size);
 
     if (rank == 0)
     {
-        FILE *out_fp = fopen("output_graph.txt", "w");
-        if (out_fp == NULL)
-        {
-            printf("Error: can't open output_graph.txt file\n");
-            exit(2);
-        }
         for (size_t i = 0; i < n; ++i)
         {
             for (size_t j = 0; j < n; ++j)

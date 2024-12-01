@@ -2,7 +2,7 @@
 CC=mpicc
 C_OPTS=-Iinclude
 
-OUT_FILE=parallel_prim.out
+BIN_FILE=parallel_prim.out
 
 CPU_COUNT?=4
 RUN=mpirun
@@ -16,11 +16,14 @@ SOURCE_FILES= \
 
 .PHONY: build run
 
-$(OUT_FILE): main.c $(SOURCE_FILES)
-	$(CC) $(C_OPTS) $^ -o $(OUT_FILE)
+$(BIN_FILE): main.c $(SOURCE_FILES)
+	$(CC) $(C_OPTS) $^ -o $(BIN_FILE)
 
-run: $(OUT_FILE)
-	$(RUN) $(RUN_OPTS) ./$<
+IN_FILE?=input_graph.txt
+OUT_FILE?=output_graph.txt
+
+run: $(BIN_FILE)
+	$(RUN) $(RUN_OPTS) ./$< $(IN_FILE) $(OUT_FILE)
 
 clean:
-	rm -f $(OUT_FILE) output_graph.txt
+	rm -f $(BIN_FILE) output_graph.txt
